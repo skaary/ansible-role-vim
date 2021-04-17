@@ -1,0 +1,68 @@
+---
+- name: perform package install and removal for Vim and Vim plugin install
+  include_tasks: "manage-packages.yml"
+
+- name: perform setup tasks for Vim and Vim plugin install
+  include_tasks: "setup.yml"
+
+- name: perform vim8 plugin installation
+  include_tasks: "install-plugins.yml"
+  loop:
+    - list: "{{ vim_installed_plugins_start }}"
+      directory: "{{ vim_plugins_start_directory }}"
+      type: "start"
+    - list: "{{ vim_installed_plugins_opt }}"
+      directory: "{{ vim_plugins_opt_directory }}"
+      type: "opt"
+  loop_control:
+    loop_var: plugin_data
+  when: vim_version.stdout is version('8.0', '>=')
+
+- name: perform vim8 plugin removal
+  include_tasks: "remove-plugins.yml"
+  loop:
+    - list: "{{ vim_removed_plugins_start }}"
+      directory: "{{ vim_plugins_start_directory }}"
+      type: "start"
+    - list: "{{ vim_removed_plugins_opt }}"
+      directory: "{{ vim_plugins_opt_directory }}"
+      type: "opt"
+  loop_control:
+    loop_var: plugin_data
+  when: vim_version.stdout is version('8.0', '>=')
+
+- name: perform vim pathogen plugin installation
+  include_tasks: "install-plugins.yml"
+  loop:
+    - list: "{{ vim_installed_plugins_start }}"
+      directory: "{{ vim_plugins_start_directory }}"
+  loop_control:
+    loop_var: plugin_data
+  when: vim_version.stdout is version('8.0', '<=')
+
+- name: perform vim pathogen plugin removal
+  include_tasks: "remove-plugins.yml"
+  loop:
+    - list: "{{ vim_removed_plugins_start }}"
+      directory: "{{ vim_plugins_pathogen_directory }}"
+  loop_control:
+    loop_var: plugin_data
+  when: vim_version.stdout is version('8.0', '<=')
+
+- name: make sure vim 8 plugins have correct owner and group
+  file:
+    path: "{{ vim_plugins_parent_directory }}/{{ vim_pack_subdirectory }}"
+    owner: "{{ vim_user }}"
+    group: "{{ vim_group }}"
+    recurse: true
+  changed_when: false
+  when: vim_version.stdout is version('8.0', '>=')
+
+- name: make sure pathogen plugins have correct owner and group
+  file:
+    path: "{{ vim_plugins_pathogen_directory }}"
+    owner: "{{ vim_user }}"
+    group: "{{ vim_group }}"
+    recurse: true
+  changed_when: false
+  when: vim_version.stdout is version('8.0', '<=')

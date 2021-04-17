@@ -1,0 +1,15 @@
+---
+- name: Verify
+  hosts: all
+
+  tasks:
+    - name: Collect package facts.
+      package_facts:
+        manager: "auto"
+
+    - name: Verify Vim is installed.
+      assert:
+        that:
+          - "'vim' in ansible_facts.packages"
+        success_msg: "Vim is installed."
+        fail_msg: "Vim is not installed."

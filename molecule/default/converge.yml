@@ -1,0 +1,28 @@
+---
+- name: Converge
+  hosts: all
+  vars:
+    vim_user: molecule
+    vim_group: molecule
+
+  pre_tasks:
+    - name: Update apt cache.
+      apt: update_cache=true cache_valid_time=600
+
+    - name: install dependencies
+      apt:
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+          - git
+          - vim-tiny
+
+    - name: create test user
+      user:
+        name: molecule
+
+  tasks:
+    - name: "Include ansible-role-vim"
+      include_role:
+        name: "ansible-role-vim"

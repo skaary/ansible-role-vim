@@ -1,0 +1,41 @@
+---
+- name: clone {{ plugin_data.type }} plugins into place.
+  git:
+    dest: "{{ vim_plugins_parent_directory }}/{{ plugin_data.directory }}/{{ (plugin.repo | basename | splitext)[0] }}"
+    repo: "{{ plugin.repo }}"
+    version: "{{ plugin.version | default('HEAD') }}"
+    update: true
+    force: true
+    clone: true
+  loop: "{{ plugin_data.list }}"
+  loop_control:
+    loop_var: plugin
+  tags:
+    - molecule-idempotence-notest
+  when: vim_version.stdout is version('8.0', '>=')
+
+- name: Create/update helptags for {{ plugin_data.type }} plugins.
+  shell: |
+    if [ -d doc ]; then
+      vim -c "helptags doc/" -c q
+    fi
+  args:
+    chdir: "{{ vim_plugins_parent_directory }}/{{ plugin_data.directory }}/{{ (plugin.repo | basename | splitext)[0] }}"
+  loop: "{{ plugin_data.list }}"
+  loop_control:
+    loop_var: plugin
+  tags:
+    - molecule-idempotence-notest
+  when: vim_version.stdout is version('8.0', '>=')
+
+- name: clone pathogen plugins into place
+  git:
+    repo: "{{ plugin.repo }}"
+    dest: "{{ vim_plugins_pathogen_directory }}/{{ (plugin.repo | basename | splitext)[0] }}"
+    version: "{{ plugin.version | default('HEAD') }}"
+    update: true
+    clone: true
+  loop: "{{ plugin_data.list }}"
+  loop_control:
+    loop_var: plugin
+  when: vim_version.stdout is version('8.0', '<=')

@@ -1,0 +1,64 @@
+---
+- name: determine .vim directory.
+  set_fact:
+    vim_directory: /home/{{ vim_user }}/.vim
+
+- name: determine vim plugin parent directory.
+  set_fact:
+    vim_plugins_parent_directory: "{{ vim_directory }}/pack"
+
+- name: determine vim start plugin directory.
+  set_fact:
+    vim_plugins_start_directory: "{{ vim_pack_subdirectory }}/start"
+
+- name: determine vim opt plugin directory.
+  set_fact:
+    vim_plugins_opt_directory: "{{ vim_pack_subdirectory }}/opt"
+
+- name: determine pathogen bundle plugin directory.
+  set_fact:
+    vim_plugins_pathogen_directory: "{{ vim_directory }}/bundle"
+
+- name: determine pathogen autoload directory.
+  set_fact:
+    vim_autoload_pathogen_directory: "{{ vim_directory }}/autoload"
+
+- name: get vim version
+  shell: set -o pipefail && vim --version | head -n1 | awk '{ print $5 }'
+  args:
+    executable: "/bin/bash"
+    warn: false
+  register: vim_version
+  changed_when: false
+
+- name: ensure vim8 plugin directory structure exists
+  file:
+    path: "{{ vim_plugins_parent_directory }}/{{ vim_directory }}"
+    state: directory
+    owner: "{{ vim_user }}"
+    group: "{{ vim_group }}"
+  loop:
+    - "{{ vim_pack_subdirectory }}"
+    - "{{ vim_plugins_start_directory }}"
+    - "{{ vim_plugins_opt_directory }}"
+  loop_control:
+    loop_var: vim_directory
+  when: vim_version.stdout is version('8.0', '>=')
+
+- name: ensure pathogen directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ vim_user }}"
+    group: "{{ vim_group }}"
+  with_items:
+    - "{{ vim_plugins_pathogen_directory }}"
+    - "{{ vim_autoload_pathogen_directory }}"
+  when: vim_version.stdout is version('8.0', '<=')
+
+- name: install pathogen
+  get_url:
+    url: "https://tpo.pe/pathogen.vim"
+    dest: "{{ vim_autoload_pathogen_directory }}/pathogen.vim"
+    force: false
+  when: vim_version.stdout is version('8.0', '<=')

@@ -1,0 +1,30 @@
+---
+vim_user: ""
+vim_group: ""
+vim_pack_subdirectory: "plugins"
+vim_installed_packages:
+  - vim
+vim_removed_packages: []
+vim_installed_plugins_start: #[]
+  - repo: "https://github.com/scrooloose/nerdtree.git"
+  #   version: "HEAD"
+  - repo: "https://github.com/vim-airline/vim-airline"
+  - repo: "https://github.com/Raimondi/delimitMate.git"
+  - repo: "https://github.com/godlygeek/tabular.git"
+  - repo: "https://github.com/tpope/vim-commentary.git"
+  - repo: "https://github.com/tpope/vim-fugitive.git"
+  - repo: "https://github.com/tpope/vim-repeat.git"
+  - repo: "https://github.com/tpope/vim-surround.git"
+  - repo: "https://github.com/vim-syntastic/syntastic.git"
+  - repo: "https://github.com/Vimjas/vim-python-pep8-indent.git"
+vim_installed_plugins_opt: #[]
+  - repo: "https://github.com/junegunn/goyo.vim.git"
+  - repo: "https://github.com/lervag/vimtex.git"
+# - repo: "https://github.com/scrooloose/nerdtree.git"
+#   version: "HEAD"
+vim_removed_plugins_start:
+  # []
+  - nerdtree
+vim_removed_plugins_opt:
+  []
+  # - nerdtree
