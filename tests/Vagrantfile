@@ -1,0 +1,25 @@
+Vagrant.configure("2") do |config|
+  # config.vm.box = "generic/ubuntu2010"
+  config.vm.box = "skaary/LinuxMint20.3"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true
+    vb.customize ["modifyvm", :id, "--vram", "12"]
+    vb.memory = "2048"
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update -qq
+    apt-get install -y python-is-python3 ansible git
+  SHELL
+
+  # Install the ansible role
+  config.vm.provision "shell", privileged: false, inline: "ansible-galaxy install -p /home/vagrant/.ansible/roles git+https://github.com/skaary/ansible-role-vim.git,,vim"
+  # move playbook.yml into the guest machine for local use
+  config.vm.provision "file", source: "./playbook.yml", destination: "/tmp/provisioning/"
+
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.provisioning_path = "/tmp/provisioning/"
+    ansible.playbook = "playbook.yml"
+  end
+end
