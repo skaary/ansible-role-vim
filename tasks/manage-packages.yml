@@ -3,8 +3,10 @@
   package:
     name: "{{ vim_installed_packages }}"
     state: present
+  become: true
 
 - name: remove unneeded Vim-related packages
   package:
     name: "{{ vim_removed_packages }}"
     state: absent
+  become: true

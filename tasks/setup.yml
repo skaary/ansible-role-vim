@@ -33,7 +33,7 @@
 
 - name: ensure vim8 plugin directory structure exists
   file:
-    path: "{{ vim_plugins_parent_directory }}/{{ vim_directory }}"
+    path: "{{ vim_plugins_parent_directory }}/{{ vim_dir }}"
     state: directory
     owner: "{{ vim_user }}"
     group: "{{ vim_group }}"
@@ -42,7 +42,7 @@
     - "{{ vim_plugins_start_directory }}"
     - "{{ vim_plugins_opt_directory }}"
   loop_control:
-    loop_var: vim_directory
+    loop_var: vim_dir
   when: vim_version.stdout is version('8.0', '>=')
 
 - name: ensure pathogen directories exist

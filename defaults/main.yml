@@ -1,6 +1,6 @@
 ---
-vim_user: ""
-vim_group: ""
+vim_user: "{{ ansible_user_id }}"
+vim_group: "{{ vim_user }}"
 vim_pack_subdirectory: "plugins"
 vim_installed_packages:
   - vim
